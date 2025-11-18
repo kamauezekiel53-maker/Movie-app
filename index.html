@@ -13,12 +13,12 @@
         <div class="logo">MH</div>
         <div>
           <h1>Movie Hub</h1>
-          <p class="lead">GiftedTech-only player — paste a sources JSON or load a sources/{id} URL</p>
+          <p class="lead">GiftedTech-only player — paste a sources URL or JSON and click Load</p>
         </div>
       </div>
 
       <div class="searchbar">
-        <input id="q" class="search" placeholder="Paste sources JSON OR enter sources URL (e.g. /api/sources/612... )">
+        <input id="q" class="search" placeholder="Paste sources URL (https://.../api/sources/{id}) or paste the JSON here">
         <button id="loadBtn" class="primary">Load</button>
       </div>
     </header>
@@ -27,18 +27,17 @@
       <section class="leftcol">
         <div class="search-controls">
           <div class="chip">Source: GiftedTech</div>
-          <div class="chip" id="resultsCount">No movie loaded</div>
+          <div class="chip" id="resultsCount">No data loaded</div>
           <div style="flex:1"></div>
-          <button class="btn secondary" id="exampleBtn">Use example JSON</button>
+          <button class="btn secondary" id="exampleBtn">Use example</button>
         </div>
 
         <div class="results" id="results">
-          <!-- When a sources JSON is loaded this area shows cards for each quality -->
+          <!-- qualities/cards injected here -->
         </div>
 
         <div class="hint">
-          <strong>Tip:</strong> If you only have a `sources/{id}` path, paste the full URL:
-          <code>https://movieapi.giftedtech.co.ke/api/sources/612791423461060063</code>
+          Tip: paste either a full sources URL (https://movieapi.giftedtech.co.ke/api/sources/612...) or paste the full JSON returned by that endpoint.
         </div>
       </section>
 
@@ -46,7 +45,7 @@
         <div class="player-card">
           <video id="player" controls preload="metadata" playsinline>
             <source id="playerSource" src="" type="video/mp4">
-            Your browser doesn't support video.
+            Your browser doesn't support the video tag.
           </video>
 
           <div class="controls">
@@ -77,7 +76,7 @@
 
         <div class="info" id="infoBox">
           <h3>No movie loaded</h3>
-          <p class="small">Paste the sources JSON (the JSON you just gave me) or a valid sources URL, then click Load.</p>
+          <p class="small">Load a sources JSON or URL to populate the player</p>
         </div>
       </aside>
     </main>
