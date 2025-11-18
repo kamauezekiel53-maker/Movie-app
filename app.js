@@ -94,7 +94,6 @@ function renderResults(items){
     card.appendChild(img);
     card.appendChild(meta);
 
-    /* UPDATED FOR MULTI-PAGE */
     card.addEventListener('click', () => {
       window.location.href = `movie.html?id=${it.subjectId}`;
     });
@@ -239,9 +238,38 @@ function playSourceByIndex(i){
 function setPlayerSource(url){
   player.pause();
   removeTracks();
-  playerSource.src = url;
+  
+  // Handle different video formats
+  if (url.includes('.m3u8')) {
+    // Handle HLS streams
+    if (window.Hls && Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(player);
+    } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari native HLS support
+      playerSource.src = url;
+    } else {
+      console.error('HLS not supported in this browser');
+      return;
+    }
+  } else {
+    // Handle direct video files (MP4, etc.)
+    playerSource.src = url;
+  }
+  
   player.load();
-  player.play().catch(()=>{});
+  player.play().catch(e => {
+    console.error('Playback failed:', e);
+    // Try with CORS proxy if direct fails
+    const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+    playerSource.src = proxyUrl;
+    player.load();
+    player.play().catch(() => {
+      console.error('Playback failed even with proxy');
+    });
+  });
+  
   openSource.href = url;
   downloadBtn.href = url;
 }
@@ -249,6 +277,7 @@ function setPlayerSource(url){
 function addTrack(url, label){
   removeTracks();
   if(!url) return;
+  
   const track = document.createElement('track');
   track.kind = 'subtitles';
   track.label = label;
@@ -257,7 +286,9 @@ function addTrack(url, label){
   player.appendChild(track);
 
   setTimeout(()=> {
-    try { track.mode = 'showing'; } catch(e){}
+    try { 
+      track.mode = 'showing'; 
+    } catch(e){}
   }, 300);
 }
 
@@ -303,3 +334,10 @@ document.getElementById('togglePip')?.addEventListener('click', async ()=>{
 qInput?.addEventListener('keydown', e=>{
   if(e.key==='Enter') searchBtn.click();
 });
+
+// Load HLS.js if needed
+if (!window.Hls) {
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+  document.head.appendChild(script);
+}
