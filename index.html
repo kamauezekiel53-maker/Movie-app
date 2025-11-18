@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieHub – Home</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Finder</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-    <h1>MOVIEHUB</h1>
-    <input type="text" id="searchInput" placeholder="Search movies...">
-</header>
+<div class="top">
+  <input id="q" placeholder="Search for a movie…" />
+  <button id="searchBtn">Search</button>
+  <button id="popularBtn">Trending</button>
+</div>
 
-<main>
-    <div id="movieList" class="grid"></div>
-</main>
+<h2 id="resultsCount"></h2>
+
+<div id="results" class="grid"></div>
 
 <script src="app.js"></script>
 </body>
