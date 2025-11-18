@@ -1,6 +1,5 @@
-/* Movie Hub — GiftedTech-only player
-   Place index.html, style.css, app.js in same folder and open index.html
-*/
+// Movie Hub — GiftedTech-only player
+// Save as app.js alongside index.html and style.css
 
 const resultsEl = document.getElementById('results');
 const resultsCount = document.getElementById('resultsCount');
@@ -20,9 +19,9 @@ const infoBox = document.getElementById('infoBox');
 
 let currentSources = [];
 let currentSubtitles = [];
-let currentTitle = 'movie';
+let currentTitle = 'Movie';
 
-/* Example JSON (useful if you paste nothing) */
+// --- The exact JSON you gave — used as example when you click "Use example" ---
 const exampleSourcesJSON = {
   "status": 200,
   "success": true,
@@ -31,35 +30,49 @@ const exampleSourcesJSON = {
     {
       "id": "1484793580861508576",
       "quality": "360p",
-      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=...360",
-      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=...360",
+      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2F0ebd9fa6ae58787d97af363ce74a0608.mp4%3Fsign%3D1a378fca2e5ae9b62e77818280e84ba8%26t%3D1763467366&title=Thunderbolts*&quality=360",
+      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2F0ebd9fa6ae58787d97af363ce74a0608.mp4%3Fsign%3D1a378fca2e5ae9b62e77818280e84ba8%26t%3D1763467366",
       "size": "400082415",
       "format": "mp4"
     },
     {
       "id": "4583454842445873520",
       "quality": "480p",
-      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=...480",
-      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=...480",
+      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2Fce2589938e992a293bf70960a2035bc3.mp4%3Fsign%3Dfdcb48f9c4cbf4d26f4a3500ed09611d%26t%3D1763465901&title=Thunderbolts*&quality=480",
+      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2Fce2589938e992a293bf70960a2035bc3.mp4%3Fsign%3Dfdcb48f9c4cbf4d26f4a3500ed09611d%26t%3D1763465901",
       "size": "508701220",
       "format": "mp4"
     },
     {
       "id": "464332441076089200",
       "quality": "1080p",
-      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=...1080",
-      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=...1080",
+      "download_url": "https://movieapi.giftedtech.co.ke/api/download?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2Fd435264e3dbe10496381a6fc4ec3f4fe.mp4%3Fsign%3D40dd9a57170352f31c13a9aa85114215%26t%3D1763464594&title=Thunderbolts*&quality=1080",
+      "stream_url": "https://movieapi.giftedtech.co.ke/api/stream?url=https%3A%2F%2Fbcdnw.hakunaymatata.com%2Ftran-audio%2F20250725%2Fd435264e3dbe10496381a6fc4ec3f4fe.mp4%3Fsign%3D40dd9a57170352f31c13a9aa85114215%26t%3D1763464594",
       "size": "2285709582",
       "format": "mp4"
     }
   ],
   "subtitles": [
-    { "id":"1", "lan":"en", "lanName":"English", "url":"https://cacdn...english.srt" },
-    { "id":"2", "lan":"ar", "lanName":"اَلْعَرَبِيَّةُ", "url":"https://cacdn...arabic.srt" }
+    {
+      "id": "6280731359825015200",
+      "lan": "ar",
+      "lanName": "اَلْعَرَبِيَّةُ",
+      "url": "https://cacdn.hakunaymatata.com/subtitle/b593ff8821a0427219d13e8bc8bc0cba.srt?...",
+      "size": "157872",
+      "delay": 0
+    },
+    {
+      "id": "8100185609282766288",
+      "lan": "en",
+      "lanName": "English",
+      "url": "https://cacdn.hakunaymatata.com/subtitle/83188de99ef42261d12c9499e7774795.srt?...",
+      "size": "147418",
+      "delay": 0
+    }
   ]
 };
 
-/* small helpers */
+// helpers
 function el(tag, attrs={}, children=[]){
   const e = document.createElement(tag);
   Object.entries(attrs).forEach(([k,v])=>{
@@ -71,7 +84,6 @@ function el(tag, attrs={}, children=[]){
   (Array.isArray(children)?children:[children]).forEach(c=>{ if(!c) return; if(typeof c === 'string') e.appendChild(document.createTextNode(c)); else e.appendChild(c); });
   return e;
 }
-
 function bytesTo(size){
   if(!size) return '—';
   const b = parseInt(size,10);
@@ -82,14 +94,14 @@ function bytesTo(size){
   return (b/1024**3).toFixed(2) + ' GB';
 }
 
-/* render sources as cards (one card per quality) */
+// render
 function renderResultsForSources(srcJson){
   resultsEl.innerHTML = '';
   const sources = Array.isArray(srcJson.results) ? srcJson.results : [];
   currentSources = sources.slice();
   currentSubtitles = Array.isArray(srcJson.subtitles) ? srcJson.subtitles : [];
-
   resultsCount.textContent = `${sources.length} qualities`;
+
   if(!sources.length){
     resultsEl.appendChild(el('div',{text:'No sources found in JSON'}));
     return;
@@ -104,23 +116,19 @@ function renderResultsForSources(srcJson){
     const playBtn = el('button',{class:'btn', text:'Play'});
     playBtn.addEventListener('click', ()=> playSourceByIndex(idx));
     meta.appendChild(title); meta.appendChild(size); meta.appendChild(playBtn);
-    // assemble
-    card.appendChild(poster);
-    card.appendChild(meta);
+    card.appendChild(poster); card.appendChild(meta);
     resultsEl.appendChild(card);
   });
 
   populateQuickSources();
   populateQualitySelect();
   populateSubtitles();
-  // auto-play best quality (choose highest numeric quality)
   autoPlayBest();
 }
 
-/* populate quick source buttons */
 function populateQuickSources(){
   quickSources.innerHTML = '';
-  currentSources.forEach((s, i)=>{
+  currentSources.forEach((s,i)=>{
     const name = s.quality || s.resolution || `src${i+1}`;
     const b = el('div',{class:'src', text:name});
     b.addEventListener('click', ()=> playSourceByIndex(i));
@@ -128,7 +136,6 @@ function populateQuickSources(){
   });
 }
 
-/* populate quality select */
 function populateQualitySelect(){
   qualitySelect.innerHTML = '<option value="">Select quality</option>';
   currentSources.forEach(s=>{
@@ -139,43 +146,34 @@ function populateQualitySelect(){
     opt.textContent = text;
     qualitySelect.appendChild(opt);
   });
-
-  qualitySelect.onchange = ()=> {
-    if(qualitySelect.value) setPlayerSource(qualitySelect.value);
-  };
+  qualitySelect.onchange = ()=> { if(qualitySelect.value) setPlayerSource(qualitySelect.value); };
 }
 
-/* populate subtitles list and select */
 function populateSubtitles(){
   quickSubs.innerHTML = '';
   subtitleSelect.innerHTML = '<option value="">Subtitles (none)</option>';
-  if(!currentSubtitles || !currentSubtitles.length) return;
-
+  if(!currentSubtitles.length) return;
   currentSubtitles.forEach(sub=>{
     const name = sub.lanName || sub.lan || sub.label || 'sub';
     const sdiv = el('div',{class:'sub', text:name});
     sdiv.addEventListener('click', ()=> setSubtitle(sub));
     quickSubs.appendChild(sdiv);
-
     const opt = document.createElement('option');
     opt.value = sub.url || '';
     opt.textContent = name;
     subtitleSelect.appendChild(opt);
   });
-
   subtitleSelect.onchange = ()=> {
     if(!subtitleSelect.value) removeTracks();
     else addTrack(subtitleSelect.value, subtitleSelect.selectedOptions[0].text);
   };
 }
 
-/* play by index */
 function playSourceByIndex(i){
   const s = currentSources[i];
   const url = s?.stream_url || s?.download_url || s?.url || '';
-  if(!url){ alert('No playable URL for this source'); return; }
+  if(!url){ alert('No playable URL'); return; }
   setPlayerSource(url);
-  // highlight active quick source button
   Array.from(quickSources.children).forEach((c, idx)=> c.classList.toggle('active', idx===i));
   downloadBtn.href = (s.download_url || url);
   downloadBtn.setAttribute('download', `${currentTitle || 'movie'}.mp4`);
@@ -183,20 +181,16 @@ function playSourceByIndex(i){
   qualitySelect.value = url;
 }
 
-/* set player source and play */
 function setPlayerSource(url){
-  try{
-    player.pause();
-  }catch(e){}
+  try{ player.pause(); }catch(e){}
   removeTracks();
   playerSource.src = url;
   player.load();
-  player.play().catch(()=>{/* autoplay blocked fallback */});
+  player.play().catch(()=>{ /* autoplay may be blocked */ });
   openSource.href = url;
   downloadBtn.href = url;
 }
 
-/* subtitle helpers */
 function addTrack(url, label){
   removeTracks();
   if(!url) return;
@@ -211,20 +205,15 @@ function addTrack(url, label){
     try { t.mode = 'showing'; } catch(e){}
   }, 300);
 }
-function removeTracks(){
-  const tracks = player.querySelectorAll('track');
-  tracks.forEach(t=>t.remove());
-}
+function removeTracks(){ const tracks = player.querySelectorAll('track'); tracks.forEach(t=>t.remove()); }
 function setSubtitle(sub){
   const url = sub.url || sub.file || '';
   const name = sub.lanName || sub.lan || sub.label || '';
   const used = Array.from(player.querySelectorAll('track')).some(t => t.src === url);
-  if(used) removeTracks();
-  else addTrack(url, name);
+  if(used) removeTracks(); else addTrack(url, name);
   Array.from(quickSubs.children).forEach(c => c.classList.toggle('active', c.textContent === name));
 }
 
-/* choose best quality to autoplay (highest numeric quality) */
 function autoPlayBest(){
   if(!currentSources.length) return;
   const sorted = currentSources.slice().sort((a,b)=>{
@@ -236,108 +225,76 @@ function autoPlayBest(){
   if(best){
     const url = best.stream_url || best.download_url || best.url || '';
     if(url) setPlayerSource(url);
-    // highlight corresponding quick source (find index)
     const idx = currentSources.indexOf(best);
     Array.from(quickSources.children).forEach((c, i)=> c.classList.toggle('active', i===idx));
   }
 }
 
-/* load flow: parse input which can be:
-   - raw JSON (object or string)
-   - full URL to /api/sources/{id}
-   - partial path starting with /api/sources/...
-*/
+// HANDLE INPUT (URL or JSON)
 async function handleLoadInput(raw){
-  if(!raw || !raw.trim()){
-    alert('Paste the sources JSON or a full sources URL and click Load (or click Example).');
-    return;
-  }
+  if(!raw || !raw.trim()){ alert('Paste the sources JSON or a full sources URL and click Load.'); return; }
 
-  // try to parse JSON first
+  // Try JSON parse
   try{
-    const maybe = JSON.parse(raw);
-    if(maybe && typeof maybe === 'object' && (maybe.results || maybe.subtitles)){
-      // we got sources JSON
-      currentTitle = maybe.title || 'movie';
-      setInfoFromSources(maybe);
-      renderResultsForSources(maybe);
+    const parsed = JSON.parse(raw);
+    if(parsed && (parsed.results || parsed.subtitles)){
+      currentTitle = parsed.title || parsed.movieTitle || currentTitle;
+      setInfoFromSources(parsed);
+      renderResultsForSources(parsed);
       return;
     }
-  }catch(e){ /* not JSON, continue */ }
+  }catch(e){ /* not JSON - continue */ }
 
-  // if not JSON, treat as URL/path
+  // Normalize URL input
   let url = raw.trim();
-  // if user pasted a bare id like 612791... convert to full url (common)
-  if(/^[0-9]{15,20}$/.test(url)){
-    url = `https://movieapi.giftedtech.co.ke/api/sources/${url}`;
-  }
-  // if path starts with /api, add host
-  if(url.startsWith('/api/')){
-    url = `https://movieapi.giftedtech.co.ke${url}`;
-  }
-  // now attempt fetch
+  if(/^[0-9]{12,20}$/.test(url)){ url = `https://movieapi.giftedtech.co.ke/api/sources/${url}`; }
+  if(url.startsWith('/api/')){ url = `https://movieapi.giftedtech.co.ke${url}`; }
+
+  // Fetch
   try{
     resultsEl.innerHTML = '<div class="small">Loading...</div>';
     const res = await fetch(url);
-    if(!res.ok) throw new Error('Fetch failed: ' + res.status);
+    if(!res.ok) throw new Error('Fetch failed: ' + res.status + ' ' + res.statusText);
     const data = await res.json();
     if(!(data && (data.results || data.subtitles))){
       resultsEl.innerHTML = '<div class="small">No sources structure found in response.</div>';
       console.warn('Response:', data);
       return;
     }
-    currentTitle = (data.title || data.resultsTitle || data.movieTitle || 'movie');
+    currentTitle = data.title || data.movieTitle || currentTitle;
     setInfoFromSources(data);
     renderResultsForSources(data);
   }catch(err){
     console.error(err);
-    resultsEl.innerHTML = '<div class="small">Error loading URL — check console.</div>';
-    alert('Error loading the URL. Open console for details.');
+    resultsEl.innerHTML = '<div class="small">Error loading URL — open console for details.</div>';
+    alert('Error loading the URL. See console for details.');
   }
 }
 
-/* set info box from sources JSON */
 function setInfoFromSources(srcJson){
-  currentTitle = srcJson.title || srcJson.movieTitle || currentTitle || 'movie';
+  currentTitle = srcJson.title || srcJson.movieTitle || currentTitle;
   infoBox.innerHTML = '';
   const titleEl = el('h3',{text: currentTitle});
-  const meta = el('p',{html:`<strong>Creator:</strong> ${srcJson.creator || 'GiftedTech'} • <strong>Status:</strong> ${srcJson.status||''}`});
+  const meta = el('p',{html:`<strong>Status:</strong> ${srcJson.status || ''} • <strong>Creator:</strong> ${srcJson.creator || ''}`});
   const subsHint = el('p',{html:`<strong>Available subtitles:</strong> ${Array.isArray(srcJson.subtitles)? srcJson.subtitles.map(s=>s.lanName||s.lan).join(', ') : 'None'}`});
-  infoBox.appendChild(titleEl);
-  infoBox.appendChild(meta);
-  infoBox.appendChild(subsHint);
+  infoBox.appendChild(titleEl); infoBox.appendChild(meta); infoBox.appendChild(subsHint);
 }
 
-/* wire UI */
+// wire UI
 loadBtn.addEventListener('click', ()=> handleLoadInput(qInput.value));
 exampleBtn.addEventListener('click', ()=> {
-  // use the example JSON provided above
+  currentTitle = 'Example — Thunderbolts*';
   setInfoFromSources(exampleSourcesJSON);
   renderResultsForSources(exampleSourcesJSON);
   resultsCount.textContent = 'Example loaded';
 });
-
-/* pip toggle */
 document.getElementById('togglePip').addEventListener('click', async ()=>{
   try{
-    if(document.pictureInPictureElement){
-      await document.exitPictureInPicture();
-    } else {
-      if(player.requestPictureInPicture) await player.requestPictureInPicture();
-    }
+    if(document.pictureInPictureElement) await document.exitPictureInPicture();
+    else if(player.requestPictureInPicture) await player.requestPictureInPicture();
   }catch(e){ console.warn('PIP failed', e); }
 });
-
-/* keyboard Enter on input */
 qInput.addEventListener('keydown', (e)=> { if(e.key==='Enter'){ loadBtn.click(); } });
 
-/* Optional: If you later have a movie-list endpoint, uncomment and set LIST_URL
-   then call fetchMovieList() to populate left column with posters and ids.
-*/
-// const LIST_URL = 'https://movieapi.giftedtech.co.ke/api/movies'; // example
-// async function fetchMovieList(){
-//   const r = await fetch(LIST_URL);
-//   const j = await r.json();
-//   // expect j.results = [{ id: "...", title: "...", thumbnail: "..." }, ...]
-//   // render them and click should call handleLoadInput('https://movieapi.../api/sources/{id}')
-//}
+// Auto-load example on first open (optional)
+// renderResultsForSources(exampleSourcesJSON);
